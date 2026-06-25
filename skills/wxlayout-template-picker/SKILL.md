@@ -29,7 +29,7 @@ description: >-
 
 ### 方式一：交互式索引页（推荐）
 
-打开 `examples/template-color-picker.html`（用浏览器直接打开）：
+打开 `template-color-picker.html`（仓库根目录，用浏览器直接打开）：
 
 - 左栏：12 张模板卡片（T00–T08 / L01 / L02），可勾选
 - 左栏：配色主题、色族、字色方案 N/B/W/C
@@ -113,7 +113,7 @@ description: >-
 
 ## 延伸阅读
 
-- 交互式选择页 → `examples/template-color-picker.html`
+- 交互式选择页 → `template-color-picker.html`（仓库根目录）
 - 模板细节 → [../wxlayout-wechat-paste/layout-templates.md](../wxlayout-wechat-paste/layout-templates.md)
 - 配色细节 → [../wechat-safe-colors/palette-reference.md](../wechat-safe-colors/palette-reference.md)
 - 自主编排规则 → [../wxlayout-wechat-paste/orchestration.md](../wxlayout-wechat-paste/orchestration.md)

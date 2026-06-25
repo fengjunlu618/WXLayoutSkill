@@ -8,7 +8,7 @@
 - 首次开源发布 `wechat-safe-colors` Skill（v0.5 安全色板）
 - 首次开源发布 `wxlayout-wechat-paste` Skill（自主编排 + 模板渲染）
 - 首次开源发布 `wxlayout-template-picker` Skill（模板配色选择器，输出 LayoutRequest 摘要）
-- 交互式模板配色索引页 `examples/template-color-picker.html`（浏览器打开，左栏勾选右栏预览）
+- 交互式模板配色索引页 `template-color-picker.html`（仓库根目录，浏览器直接打开，左栏勾选右栏预览）
 - 4 个 theme JSON 数据文件内联进 Skill `data/` 目录，实现自包含
 - 一键安装脚本 `install.sh` / `install.ps1`，支持 `--target cursor|codex|claude|all`
 - 短文 demo 样例 `examples/demo.md`

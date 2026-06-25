@@ -13,7 +13,7 @@
 | `wechat-safe-colors` | **配色层**：9 族低饱和安全色 + 四级字色 N/W/B/C + 高亮 H1/H2，微信深色模式不发脏 |
 | `wxlayout-template-picker` | **选择器**：帮用户可视化选模板/配色，输出选择摘要交给排版引擎执行 |
 
-另附 `examples/template-color-picker.html` —— 浏览器打开的交互式模板配色索引页，左栏勾选模板/色卡，右栏 680px 实时预览，一键生成给 Agent 的指令。
+另附 `template-color-picker.html`（仓库根目录，浏览器直接打开）—— 交互式模板配色索引页，左栏勾选模板/色卡，右栏 680px 实时预览，一键生成给 Agent 的指令。
 
 ## 为什么需要它
 
@@ -91,13 +91,57 @@ cd wechat-layout-skills
 
 ## 使用
 
-### Cursor
+有两条路径，按需选一条。
+
+### 路径 A：先选模板再排版（推荐新手）
+
+**第 1 步 · 打开交互式选择页**
+
+仓库根目录的 `template-color-picker.html` 用浏览器直接打开（双击即可，无需服务器）：
+
+```bash
+# macOS
+open template-color-picker.html
+
+# Windows
+start template-color-picker.html
+
+# Linux
+xdg-open template-color-picker.html
+```
+
+**第 2 步 · 在页面上选模板和配色**
+
+页面分两栏：
+
+- **左栏**：12 张模板卡片（T00–T08 / L01 / L02），点卡片可勾选；下方有配色主题、色族、字色方案 N/B/W/C
+- **右栏**：680px 实时预览，点任意模板卡即看到该模板长什么样
+
+**第 3 步 · 生成指令**
+
+页面上选好后，点「复制排版说明」按钮，得到一段给 Agent 的指令，例如：
+
+```
+排版 @你的文章.md
+模板：T00 + T01×2 + T03 + T08
+配色：warm-mixed；T03 四块用 rose/parchment/sage/charcoal
+```
+
+**第 4 步 · 交给 Agent 渲染**
+
+把这段指令粘到对话里（各 Agent 触发语法见下方「路径 B」），Agent 会按你的选择渲染，不再自主判断。
+
+### 路径 B：直接让 Agent 自主编排（推荐熟手）
+
+跳过选择页，直接把文章丢给排版 Skill，Agent 会自己读文章、定模板、选配色。
+
+#### Cursor
 
 ```
 @wxlayout-wechat-paste 帮我排版这篇 @article.md
 ```
 
-### Codex CLI
+#### Codex CLI
 
 ```
 $wxlayout-wechat-paste 排版 article.md
@@ -105,7 +149,7 @@ $wxlayout-wechat-paste 排版 article.md
 
 或输入 `/skills` 从列表选。Codex 也会根据 description 隐式自动触发。
 
-### Claude Code
+#### Claude Code
 
 ```
 /wxlayout-wechat-paste
@@ -113,7 +157,7 @@ $wxlayout-wechat-paste 排版 article.md
 
 然后粘贴文章内容。Claude 也会根据任务描述隐式自动触发。
 
-### GitHub Copilot / Windsurf
+#### GitHub Copilot / Windsurf
 
 直接在对话里描述需求，Agent 会读 `AGENTS.md` 里的排版权威规则：
 
@@ -121,24 +165,34 @@ $wxlayout-wechat-paste 排版 article.md
 帮我排版这篇文章，输出公众号 HTML：[粘贴 MD]
 ```
 
-### 通用流程
+### 渲染后的流程（所有 Agent 通用）
 
-无论哪个 Agent，触发后都会：
+无论走路径 A 还是 B，Agent 渲染完成后都走这几步：
 
-1. 扫描文章（字数、结构、气质）
-2. 自主决定模板组合与配色主题（用 3–5 行「编排方案」告知你）
-3. 渲染成带 `#copy-target` 和复制按钮的 HTML
-4. 你在浏览器打开 → 点「复制排版内容」→ 粘贴到公众号编辑器
-
-也可以指定模板/配色覆盖自主判断：
+1. **Agent 输出 HTML 文件**，内含 `#copy-target` 区域和「复制排版内容」按钮
+2. **浏览器打开**该 HTML 文件（双击或 `open 文件名.html`）
+3. **点「复制排版内容」按钮** → 弹窗提示「已复制」
+4. **打开微信公众号后台** → 新建图文 → 编辑器里 `Ctrl+V` / `Cmd+V` 粘贴
+5. **切换深色模式预览一次**（公众号编辑器右上角），确认安全色不发脏
+6. 满意即可发布
 
 ```
-排版 @article.md
+Agent 渲染 → .html 文件 → 浏览器打开 → 点复制 → 粘贴公众号 → 浅/深预览 → 发布
+```
+
+### 覆盖自主判断（可选）
+
+路径 B 里也可以指定模板/配色，覆盖 Agent 的自主判断：
+
+```
+@wxlayout-wechat-paste 排版 @article.md
 模板：只要 T01 + T08
 配色：全篇 morandi
 ```
 
-先看 demo 感受效果：
+完全指定时按你的清单执行，不再改模板种类；未提及的槽位仍由 Agent 补全。
+
+### 先看 demo 感受效果
 
 ```bash
 # 把 examples/demo.md 喂给 Skill，对照 examples/demo-expected.md 看预期编排
@@ -181,6 +235,7 @@ $wxlayout-wechat-paste 排版 article.md
 wechat-layout-skills/
 ├── README.md                      本文件
 ├── AGENTS.md                      跨 Agent 通用指引（agents.md 开放标准）
+├── template-color-picker.html     ★ 交互式模板配色索引页（浏览器直接打开）
 ├── LICENSE                        MIT
 ├── CHANGELOG.md
 ├── install.sh / install.ps1       多 Agent 一键安装（--target cursor|codex|claude|all）
@@ -204,7 +259,6 @@ wechat-layout-skills/
 │       ├── SKILL.md
 │       └── agents/openai.yaml     Codex 专用元数据
 ├── examples/
-│   ├── template-color-picker.html 交互式模板配色索引页（浏览器打开）
 │   ├── demo.md                    短文样例（<1500 字）
 │   └── demo-expected.md           预期编排方案 + 验证清单
 └── docs/

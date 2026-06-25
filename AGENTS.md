@@ -10,7 +10,7 @@
 - `skills/wxlayout-wechat-paste` — 公众号排版引擎（模板 + 自主编排）
 - `skills/wechat-safe-colors` — 微信安全色配色层
 - `skills/wxlayout-template-picker` — 模板配色选择器（帮用户选模板/配色，输出选择摘要）
-- `examples/template-color-picker.html` — 浏览器交互式模板配色索引页
+- `template-color-picker.html` — 浏览器交互式模板配色索引页（仓库根目录，直接打开）
 
 依赖关系：`wxlayout-template-picker` → `wxlayout-wechat-paste` → `wechat-safe-colors`。三个 Skill 必须成套使用。
 

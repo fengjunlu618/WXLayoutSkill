@@ -1,0 +1,39 @@
+{
+  "name": "wechat-layout-tokens",
+  "version": "0.2",
+  "description": "全站统一圆角 · 间距 · 内嵌组件规范 · 与 wechat-safe-palette 配合使用",
+  "status": "validated",
+  "validatedAt": "2026-06-24",
+  "paletteSource": "../wechat-safe-colors/data/wechat-safe-palette.json",
+  "referenceLongForm": "see examples/ in repo root",
+  "radius": {
+    "card": "12px",
+    "inner": "12px",
+    "image": "12px",
+    "code": "12px",
+    "pill": "980px",
+    "maxWeChat": "12px",
+    "alias": "r12",
+    "rule": "外卡 / 内嵌块 / 代码框 / 图片槽统一 12px（较 8px 更润）；仅标签 pill 980px 例外；禁止 4/6/8/10/18px 混用"
+  },
+  "spacing": {
+    "canvasPadding": "20px 16px 28px",
+    "cardPadding": "32px 22px",
+    "cardGap": "18px",
+    "sectionDividerTop": "28px",
+    "paragraphGap": "18px",
+    "innerPadding": "14px 16px",
+    "innerPaddingCompact": "12px 14px"
+  },
+  "typography": {
+    "fontStack": "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif",
+    "bodySize": "16px",
+    "bodyLineHeight": "2",
+    "h2Size": "21px",
+    "titleSize": "28px"
+  },
+  "forbidden": {
+    "backgrounds": ["#FFFFFF", "rgba(255,255,255"],
+    "effects": ["box-shadow with rgba", "双图并排 inline-block"]
+  }
+}

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WXLayout · 模板与配色索引</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #c8c8c8;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+      padding: 32px 16px 64px;
+      color: #383838;
+    }
+    .layout {
+      display: flex; gap: 24px; max-width: 1320px; margin: 0 auto;
+      align-items: flex-start;
+    }
+    .main-col { flex: 1; min-width: 0; max-width: 560px; }
+    .preview-dock {
+      width: 680px; flex-shrink: 0;
+      position: sticky; top: 20px;
+      height: calc(100vh - 40px);
+      display: flex; flex-direction: column;
+      border-radius: 16px; overflow: hidden;
+      border: 1px solid #888888;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      background: #1a1a1a;
+    }
+    .preview-dock-head {
+      padding: 12px 16px; background: #383838; color: #F4ECD7;
+      border-bottom: 1px solid #555555; flex-shrink: 0;
+    }
+    .preview-dock-head .dock-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .preview-dock-head .dock-sub { font-size: 11px; color: #B8C4CC; line-height: 1.5; }
+    .preview-dock-body {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      background: #b0b0b0;
+    }
+    .preview-dock-body .preview-inner { width: 680px; min-height: 100%; }
+    .preview-placeholder {
+      width: 680px; min-height: 360px; display: flex; align-items: center; justify-content: center;
+      background: #F5F5F5; color: #888888; font-size: 14px; text-align: center; padding: 40px;
+      line-height: 1.8;
+    }
+    .toolbar {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      margin-bottom: 20px;
+    }
+    .toolbar button {
+      background: #383838; color: #F4ECD7; border: none; border-radius: 980px;
+      padding: 10px 20px; font-size: 14px; cursor: pointer; font-family: inherit;
+    }
+    .toolbar button.secondary { background: #525252; color: #EDE4CF; }
+    .toolbar button:hover { opacity: 0.92; }
+    .toolbar .hint { font-size: 13px; color: #525252; flex: 1; min-width: 200px; }
+    .panel {
+      background: #F5F5F5; border-radius: 12px; padding: 20px 18px; margin-bottom: 16px;
+      border: 1px solid #D1D1D6;
+    }
+    .panel h2 {
+      font-size: 15px; letter-spacing: 0.06em; margin-bottom: 6px; color: #383838;
+    }
+    .panel .sub { font-size: 12px; color: #666666; margin-bottom: 14px; line-height: 1.6; }
+    .template-list { display: flex; flex-direction: column; gap: 8px; }
+    .template-pick {
+      border: 2px solid #D1D1D6; border-radius: 12px;
+      background: #FAFAFA; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .template-pick:hover,
+    .template-pick.active-preview { border-color: #525252; background: #F0EEEA; }
+    .template-pick.selected { border-color: #383838; box-shadow: 0 0 0 1px #383838; background: #FAFAFA; }
+    .template-pick.selected.active-preview { border-color: #383838; }
+    .template-meta {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+      background: transparent;
+    }
+    .template-check {
+      width: 18px; height: 18px; border-radius: 4px; border: 2px solid #888888;
+      flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #FAFAFA; background: transparent;
+    }
+    .template-pick.selected .template-check {
+      background: #383838; border-color: #383838;
+    }
+    .template-pick.selected .template-check::after { content: "✓"; }
+    .pick-id { font-size: 10px; letter-spacing: 0.12em; color: #888888; margin-bottom: 2px; }
+    .pick-label { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .pick-tags { font-size: 11px; color: #666666; line-height: 1.5; margin-bottom: 6px; }
+    .pick-badge {
+      display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 980px;
+      background: #EEEEEE; color: #525252; margin-right: 4px;
+    }
+    @media (max-width: 1100px) {
+      .layout { flex-direction: column; max-width: 680px; }
+      .main-col { max-width: none; }
+      .preview-dock {
+        width: 100%; position: relative; top: 0;
+        height: min(70vh, 720px); order: -1;
+      }
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .pick {
+      border: 2px solid #D1D1D6; border-radius: 12px; padding: 12px; cursor: pointer;
+      background: #FAFAFA; transition: border-color 0.15s, box-shadow 0.15s; user-select: none;
+    }
+    .pick:hover { border-color: #888888; }
+    .pick.selected { border-color: #383838; box-shadow: 0 0 0 1px #383838; }
+    .swatch-row { display: flex; gap: 4px; margin-top: 8px; }
+    .swatch {
+      flex: 1; height: 22px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08);
+    }
+    .family-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .family-pick { padding: 10px; }
+    .family-pick .swatch { height: 28px; margin-bottom: 6px; }
+    .family-name { font-size: 12px; font-weight: 600; }
+    .family-hex { font-size: 10px; color: #888888; }
+    .scheme-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .scheme-pick { flex: 1; min-width: 140px; padding: 10px 12px; }
+    .scheme-line { font-size: 11px; line-height: 1.7; font-family: ui-monospace, monospace; }
+    .spec-box {
+      background: #383838; color: #EDE4CF; border-radius: 12px; padding: 16px 18px;
+      font-size: 13px; line-height: 1.85; white-space: pre-wrap; word-break: break-all;
+      min-height: 120px; font-family: ui-monospace, "PingFang SC", monospace;
+    }
+    .spec-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #2c3a32; color: #F4ECD7; padding: 10px 20px; border-radius: 980px;
+      font-size: 13px; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 99;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <div class="main-col">
+
+  <div class="toolbar">
+    <button type="button" onclick="copySpec()">一键复制 · 风格与配色说明</button>
+    <button type="button" class="secondary" onclick="clearAll()">清空选择</button>
+    <span class="hint">悬停左侧模板 · 右侧 680px 大图 · 点击勾选</span>
+  </div>
+
+  <div class="panel">
+    <h2>① 卡片模板（可多选）</h2>
+    <p class="sub">鼠标悬停条目 → 右侧预览标杆 HTML 片段（T05 为 Safe 莫兰迪版）</p>
+    <div class="template-list" id="template-list"></div>
+  </div>
+
+  <div class="panel">
+    <h2>② 配色主题（单选）</h2>
+    <p class="sub">全篇色温与主族组合 · 不选则「由 Agent 判断」</p>
+    <div class="grid" id="theme-grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>③ 色族色卡（可选 · 可多选）</h2>
+    <div class="family-grid" id="family-grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>③b 高亮色（单选 · 可选）</h2>
+    <p class="sub">H1 暖琥珀 / H2 板岩青 · 阶段 tag · 左竖线 · strong · 随配色主题自动配对</p>
+    <div class="scheme-row" id="highlight-grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>④ 字色阶梯（可选 · 单选）</h2>
+    <div class="scheme-row" id="scheme-grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>⑤ 生成的排版说明</h2>
+    <div class="spec-box" id="spec-output"></div>
+    <div class="spec-actions">
+      <button type="button" onclick="copySpec()">复制说明</button>
+      <button type="button" class="secondary" onclick="copySpecWithPlaceholder()">复制 + 路径占位</button>
+    </div>
+  </div>
+
+  </div><!-- /main-col -->
+
+  <aside class="preview-dock" id="preview-dock">
+    <div class="preview-dock-head">
+      <div class="dock-title" id="dock-title">模板预览</div>
+      <div class="dock-sub" id="dock-sub">悬停左侧模板 · 680px 公众号宽度 · 可滚动查看完整片段</div>
+    </div>
+    <div class="preview-dock-body" id="preview-dock-body">
+      <div class="preview-inner" id="preview-inner">
+        <div class="preview-placeholder" id="preview-placeholder">
+          将鼠标移到左侧模板条目<br>此处显示完整卡片预览
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- /layout -->
+
+<div class="toast" id="toast">已复制到剪贴板</div>
+
+<script>
+const FF = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif";
+
+const TEMPLATES = [
+  { id: 'T00', label: '开篇杂志', tags: '标签 · 大标题 · 分隔线 · 引用带 · 品牌字', mode: 'safe-default' },
+  { id: 'T01', label: '笔记', tags: '横线纸 · 顶栏 · 左留白 · 便签摘要', mode: '可换族' },
+  { id: 'T02', label: '山水理念', tags: '青绿渐变 · 左竖线分条 · 居中金句', mode: 'builtin' },
+  { id: 'T03', label: '对比路径', tags: '灰底容器 · A/B/C 色块 · D 深底高亮', mode: '四槽可换' },
+  { id: 'T04', label: '架构极客', tags: '深壳 · Layer 外凸/内凹 · 代码流', mode: 'mixed' },
+  { id: 'T05', label: '故事', tags: '圆角壳 · callout · 叙事收束', mode: 'Safe 莫兰迪' },
+  { id: 'T06', label: '元测试深块', tags: '深灰壳 · 居中大字 · 斑马清单', mode: '可换族' },
+  { id: 'T07', label: '路线图', tags: '左线时间轴 · 阶段 tag · 羊皮底块', mode: 'safe-default' },
+  { id: 'T08', label: '结语', tags: '双 line 顶 · 右对齐 lede · 居中金句块', mode: 'safe-default' },
+  { id: 'T99', label: '页脚灰栏', tags: '日期 · 声明 · 与结语区分', mode: 'safe-default' },
+];
+
+/* 标杆 HTML 真实片段 · 样例文案 */
+const PREVIEWS = {
+  T00: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:32px 22px 28px;box-sizing:border-box;border-radius: 12px;border:1px solid #E5E5EA;background:#FAFAFA;">
+    <section style="margin:0 0 14px;">
+      <p style="display:inline;margin:0;font-size:11px;letter-spacing:0.14em;color:#383838;">WXLayout · 排版实验</p>
+    </section>
+    <p style="margin:0 0 12px;font-size:28px;font-weight:700;line-height:1.32;color:#383838;">写 Markdown 的，<br>不该自己排版</p>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.75;color:#666666;text-align:right;">内容和排版，我把它拆开了。</p>
+    <section style="margin:0 0 18px;height:1px;background:#D1D1D6;"></section>
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:0.06em;color:#666666;text-align:right;">Opening</p>
+    <p style="margin:0 0 14px;font-size:20px;font-weight:700;line-height:1.5;color:#383838;text-align:right;">天下苦公众号排版久矣。</p>
+    <section style="margin:0 0 14px;padding:14px 0;border-top:1px solid #D1D1D6;border-bottom:1px solid #D1D1D6;">
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#666666;font-style:italic;text-align:center;">「我到底是来写内容的，还是来当排版工的？」</p>
+    </section>
+    <section style="margin:0;padding:14px 0 0;border-top:1px solid #D1D1D6;">
+      <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;color:#666666;">PROJECT CODE</p>
+      <p style="margin:0;font-size:26px;font-weight:700;color:#383838;">WXLayout</p>
+    </section>
+  </section>
+</section>`,
+
+  T01: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:0;border-radius: 12px;border:1px solid #D9CEB0;overflow:hidden;background:#F4ECD7;background-image:linear-gradient(to right,transparent 31px,#E5D9BC 31px,#E5D9BC 32px,transparent 32px),repeating-linear-gradient(to bottom,transparent 0,transparent 31px,#EDE4CF 31px,#EDE4CF 32px);">
+    <section style="margin:0;padding:14px 22px 12px 38px;background:#EDE4CF;border-bottom:1px solid #D9CEB0;">
+      <p style="margin:0 0 4px;font-size:10px;letter-spacing:0.1em;color:#383838;">01 · 痛点 · 笔记</p>
+      <p style="margin:0;font-size:21px;font-weight:700;line-height:1.38;color:#383838;">先问大家一个问题</p>
+    </section>
+    <section style="margin:0;padding:18px 22px 8px 38px;">
+      <p style="margin:0 0 14px;font-size:16px;line-height:2;color:#383838;text-align:justify;">你们有没有过这种体验：写完一篇文章，粘贴预览——<strong style="font-weight:700;">能用，但也就那样</strong>。</p>
+      <p style="margin:0;font-size:15px;line-height:1.85;color:#383838;text-align:right;font-style:italic;">我两个都试过。前者太素，后者太脆。</p>
+    </section>
+    <section style="margin:0 16px 18px 38px;padding:16px;border-radius: 12px;border:1px solid #D9CEB0;background:#EDE4CF;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,#E5D9BC 27px,#E5D9BC 28px);">
+      <p style="margin:0;font-size:17px;line-height:1.65;font-weight:700;color:#383838;text-align:center;">问题的根源，不是「模板不够多」，<br>而是我们把内容和排版绑死了。</p>
+    </section>
+  </section>
+</section>`,
+
+  T02: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #b8c4b8;background:#f2f5f0;background-image:linear-gradient(to bottom,#f5f7f2 0%,#eef2ec 55%,#e8ece6 100%);">
+    <section style="margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #c5d0c5;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.14em;color:#6d8074;">02 · 理念 · 山水</p>
+      <p style="margin:0;font-size:22px;font-weight:700;line-height:1.42;color:#2c3a32;">内容和排版，<br>本来就不该是一回事</p>
+    </section>
+    <section style="margin:0;border-top:1px solid #c5d0c5;border-bottom:1px solid #c5d0c5;">
+      <section style="margin:0;padding:14px 18px 14px 20px;border-bottom:1px solid #c5d0c5;border-left:2px solid #5c7264;background:#f8faf8;">
+        <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;color:#6d8074;">内容层</p>
+        <p style="margin:0 0 2px;font-size:18px;font-weight:700;color:#2c3a32;">Markdown</p>
+        <p style="margin:0;font-size:14px;line-height:1.85;color:#57534e;">写什么、结构怎样</p>
+      </section>
+      <section style="margin:0;padding:14px 18px 14px 20px;border-left:2px solid #6b7f6e;background:#f5f7f4;">
+        <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;color:#6d8074;">排版层</p>
+        <p style="margin:0 0 2px;font-size:18px;font-weight:700;color:#2c3a32;">LayoutDoc</p>
+        <p style="margin:0;font-size:14px;line-height:1.85;color:#57534e;">怎么排、哪里用卡片</p>
+      </section>
+    </section>
+    <section style="margin:16px 0 0;padding:20px;text-align:center;background:#f8faf8;border:1px solid #c5d0c5;">
+      <p style="margin:0;font-size:17px;font-weight:700;color:#3d5248;">内容 ≠ 排版</p>
+    </section>
+  </section>
+</section>`,
+
+  T03: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #D1D1D6;background:#EEEEEE;">
+    <section style="margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #D1D1D6;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;color:#383838;">03 · 对比</p>
+      <p style="margin:0;font-size:22px;font-weight:700;line-height:1.38;color:#383838;">为什么现有方案都不够？</p>
+    </section>
+    <section style="margin:0 0 8px;padding:16px 16px 16px 14px;border-radius: 12px;background:#CFB7B7;border:1px solid #B8A0A0;border-left:3px solid #383838;">
+      <p style="margin:0 0 4px;font-size:24px;font-weight:700;color:#383838;">A</p>
+      <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:#383838;">Markdown 实时预览型</p>
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#383838;">MD 语法表达的排版意图非常有限……</p>
+    </section>
+    <section style="margin:0 0 8px;padding:16px 16px 16px 14px;border-radius: 12px;background:#F4ECD7;border:1px solid #D9CEB0;border-left:3px solid #383838;">
+      <p style="margin:0 0 4px;font-size:24px;font-weight:700;color:#383838;">B</p>
+      <p style="margin:0 0 4px;font-size:16px;font-weight:700;color:#383838;">固定模板型</p>
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#383838;">快，但精细控制几乎为零……</p>
+    </section>
+    <section style="margin:0;padding:18px 16px;border-radius: 12px;background:#383838;border:1px solid #555555;border-left:4px solid #F4ECD7;">
+      <p style="margin:0 0 4px;font-size:24px;font-weight:700;color:#F4ECD7;">D</p>
+      <p style="margin:0 0 6px;font-size:17px;font-weight:700;color:#F4ECD7;">内容 + AI 排版 + 微信兼容</p>
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#EDE4CF;">写 Markdown → LayoutDoc → 内联 HTML</p>
+    </section>
+  </section>
+</section>`,
+
+  T04: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #3a3a3c;background:#161618;background-image:linear-gradient(to bottom,#1c1c1e 0%,#161618 100%);">
+    <section style="margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #3a3a3c;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;color:#86868b;">04 · 架构 · DARK</p>
+      <p style="margin:0;font-size:22px;font-weight:700;line-height:1.38;color:#f5f5f7;">WXLayout 长什么样？</p>
+    </section>
+    <section style="margin:0 0 8px;padding:16px 18px;border-radius: 12px;border:1px solid #48484a;background:#2a2a2c;box-shadow:0 4px 16px rgba(0,0,0,0.32);">
+      <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;color:#636366;">LAYER 01 · 外凸</p>
+      <p style="margin:0 0 4px;font-size:18px;font-weight:700;color:#f5f5f7;">Content Parser</p>
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#86868b;">Markdown → ContentAST</p>
+    </section>
+    <section style="margin:0 0 8px;padding:16px 18px;border-radius: 12px;border:1px solid #2a2a2c;background:#18181a;box-shadow:inset 0 3px 14px rgba(0,0,0,0.38);">
+      <p style="margin:0 0 4px;font-size:11px;letter-spacing:0.1em;color:#636366;">LAYER 02 · 内凹</p>
+      <p style="margin:0 0 4px;font-size:18px;font-weight:700;color:#f5f5f7;">Layout Skill</p>
+      <p style="margin:0;font-size:14px;line-height:1.85;color:#86868b;">输出 LayoutDoc</p>
+    </section>
+    <section style="margin:0;padding:14px 16px;border-radius: 12px;background:#0a0a0a;border:1px solid #48484a;border-left:2px solid #8AADA4;">
+      <p style="margin:0;font-size:12px;line-height:1.9;color:#98989d;">content.md → LayoutDoc → WeChat HTML</p>
+    </section>
+  </section>
+</section>`,
+
+  T05: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #B8C4CC;background:#EEF1F4;">
+    <section style="margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #B8C4CC;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;color:#5C6570;">05 · 故事 · Safe 莫兰迪</p>
+      <p style="margin:0;font-size:22px;font-weight:700;line-height:1.38;color:#2F3840;">我负责「想」，<br>AI 负责「排」</p>
+    </section>
+    <p style="margin:0 0 14px;font-size:16px;line-height:2;color:#4A5258;text-align:justify;">我负责产品设计，AI 负责写代码和排版逻辑。</p>
+    <section style="margin:0 0 14px;padding:16px 18px;border-radius: 12px;border:1px solid #A8B8C4;background:#D4DCE3;">
+      <p style="margin:0;font-size:15px;line-height:1.9;color:#2F3840;text-align:right;"><strong style="font-weight:700;">卡片式分章排版</strong>，阅读体验好太多。</p>
+    </section>
+    <section style="margin:0;padding:16px 0 0;border-top:1px solid #B8C4CC;text-align:center;">
+      <p style="margin:0;font-size:18px;font-weight:700;color:#2F3840;">每章节，不同卡片样式</p>
+    </section>
+  </section>
+</section>`,
+
+  T06: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:2px solid #555555;background:#383838;">
+    <section style="margin:0 0 16px;padding-bottom:14px;border-bottom:1px solid #555555;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.14em;color:#BAC895;">TEST · 06</p>
+      <p style="margin:0;font-size:22px;font-weight:700;color:#F4ECD7;">这篇文章，就是最好的测试</p>
+    </section>
+    <p style="margin:0 0 16px;font-size:22px;font-weight:700;line-height:1.45;color:#F4ECD7;text-align:center;">你现在看到的排版效果，<br>就是 WXLayout 的第一次公开测试</p>
+    <section style="margin:0;border-radius: 12px;border:1px solid #555555;overflow:hidden;">
+      <section style="margin:0;padding:10px 14px;border-bottom:1px solid #555555;background:#424242;">
+        <p style="margin:0;font-size:14px;color:#EDE4CF;"><strong style="color:#CFB7B7;">开篇卡</strong> — 标题、导语</p>
+      </section>
+      <section style="margin:0;padding:10px 14px;border-bottom:1px solid #555555;">
+        <p style="margin:0;font-size:14px;color:#EDE4CF;"><strong style="color:#BAC895;">理念卡</strong> — 核心观点</p>
+      </section>
+      <section style="margin:0;padding:10px 14px;background:#424242;">
+        <p style="margin:0;font-size:14px;color:#EDE4CF;"><strong style="color:#F4ECD7;">架构卡</strong> — 四层数据流</p>
+      </section>
+    </section>
+  </section>
+</section>`,
+
+  T07: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #E5E5EA;background:#FAFAFA;">
+    <section style="margin:0 0 18px;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;color:#666666;">07 · 路线图</p>
+      <p style="margin:0;font-size:22px;font-weight:700;color:#383838;">未来的计划？</p>
+    </section>
+    <section style="margin:0;padding:0 0 0 20px;border-left:2px solid #D1D1D6;">
+      <section style="margin:0 0 14px;padding:0 0 14px 16px;border-bottom:1px solid #E5E5EA;">
+        <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.1em;color:#BAC895;">MVP · 现在 → 4 周</p>
+        <p style="margin:0 0 4px;font-size:22px;font-weight:700;color:#383838;">Web 双栏编辑器</p>
+        <p style="margin:0;font-size:14px;line-height:1.85;color:#383838;">左边 MD、右边预览，一键复制。</p>
+      </section>
+      <section style="margin:0;padding:0 0 0 16px;">
+        <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.1em;color:#666666;">V1 · +4 周</p>
+        <p style="margin:0;font-size:22px;font-weight:700;color:#383838;">多主题 + Enhance Skill</p>
+      </section>
+    </section>
+    <section style="margin:16px 0 0;padding:16px;border-radius: 12px;background:#F4ECD7;border:1px solid #D9CEB0;border-top:3px solid #383838;">
+      <p style="margin:0;font-size:18px;font-weight:700;color:#383838;text-align:right;">全程不超过五分钟</p>
+    </section>
+  </section>
+</section>`,
+
+  T08: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0;padding:28px 22px 24px;border-radius: 12px;border:1px solid #E5E5EA;border-top:3px double #D1D1D6;background:#FAFAFA;">
+    <section style="margin:0 0 18px;">
+      <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.12em;color:#666666;">08 · 结语</p>
+      <p style="margin:0;font-size:22px;font-weight:700;color:#383838;">最后的话</p>
+    </section>
+    <p style="margin:0 0 16px;font-size:16px;line-height:2;color:#383838;text-align:justify;">AI 让内容创作变快了，但排版还在拖后腿。</p>
+    <p style="margin:0 0 16px;font-size:17px;line-height:1.85;color:#383838;text-align:right;border-right:3px solid #383838;padding-right:16px;"><strong>做 WXLayout，</strong><br>我想解决「写完之后怎么办」。</p>
+    <section style="margin:0;padding:24px 20px;text-align:center;background:#F4ECD7;border:1px solid #D9CEB0;border-radius: 12px;">
+      <section style="margin:0 auto 12px;height:1px;width:48px;background:#383838;"></section>
+      <p style="margin:0;font-size:20px;font-weight:700;color:#383838;">写 Markdown 的，不该自己排版</p>
+      <section style="margin:12px auto 0;height:1px;width:48px;background:#383838;"></section>
+    </section>
+  </section>
+</section>`,
+
+  T99: `
+<section style="margin:0;padding:20px 16px;box-sizing:border-box;font-family:${FF};background:#F5F5F5;">
+  <section style="margin:0 0 12px;padding:28px 22px;border-radius: 12px;border:1px solid #E5E5EA;background:#FAFAFA;">
+    <p style="margin:0;font-size:14px;color:#666666;text-align:center;">… 正文卡片 …</p>
+  </section>
+  <section style="margin:0;padding:16px 20px;border-radius: 12px;border:1px solid #D1D1D6;background:#EEEEEE;">
+    <section style="margin:0 0 10px;height:1px;background:#CCCCCC;"></section>
+    <p style="margin:0 0 8px;font-size:11px;letter-spacing:0.08em;color:#666666;">关于本篇</p>
+    <p style="margin:0 0 4px;font-size:13px;line-height:1.7;color:#383838;text-align:right;">角落君 · 角落工作室</p>
+    <p style="margin:0 0 4px;font-size:13px;line-height:1.7;color:#383838;">WXLayout 项目 · MVP 测试中</p>
+    <p style="margin:0;font-size:13px;line-height:1.7;color:#666666;text-align:right;">渲染模式：安全色卡 · 浅深双模式</p>
+  </section>
+</section>`
+};
+
+const THEMES = [
+  { id: 'warm', label: '暖中性 warm', desc: 'neutral + parchment · H1 暖琥珀 tag/线',
+    swatches: ['#FAFAFA', '#F4ECD7', '#B8A078', '#6E6248', '#383838'] },
+  { id: 'warm-mixed', label: '暖混合 warm-mixed', desc: 'T03 四块 · H1 暖琥珀',
+    swatches: ['#EEEEEE', '#CFB7B7', '#F4ECD7', '#B8A078', '#383838'] },
+  { id: 'cool-neutral', label: '冷中性 cool-neutral', desc: 'morandiBlue · T04 深壳 · H2 板岩青',
+    swatches: ['#FAFAFA', '#D4DCE3', '#8AADA4', '#4A635C', '#161618'] },
+  { id: 'morandi-soft', label: '莫兰迪 soft', desc: 'morandi 壳 · 字色 B · H2 板岩青',
+    swatches: ['#EEF1F4', '#D4DCE3', '#8AADA4', '#4A5258', '#2F3840'] },
+  { id: 'neutral-warm-accent', label: '中性+暖 accent', desc: 'neutral 主 · H1 暖琥珀 · parchment 底块',
+    swatches: ['#FAFAFA', '#EEEEEE', '#B8A078', '#F4ECD7', '#383838'] },
+  { id: 'dark-accent', label: '深底 accent', desc: 'charcoal 壳 · H1 onDark #E5D9BC',
+    swatches: ['#383838', '#E5D9BC', '#B8A078', '#CFB7B7', '#2D2D2D'] },
+  { id: 'agent-auto', label: '由 Agent 判断', desc: '不指定主题 · 按文章自主编排',
+    swatches: ['#FAFAFA', '#F4ECD7', '#B8C4CC', '#383838', '#161618'] },
+];
+
+const FAMILIES = [
+  { id: 'parchment', label: '羊皮纸', hex: '#F4ECD7', border: '#D9CEB0' },
+  { id: 'rose', label: '尘粉', hex: '#CFB7B7', border: '#B8A0A0' },
+  { id: 'sage', label: '鼠尾草', hex: '#BAC895', border: '#9FA882' },
+  { id: 'lavender', label: '薰衣草', hex: '#C8C0D4', border: '#B0A8C4' },
+  { id: 'morandiBlue', label: '莫兰迪蓝', hex: '#B8C4CC', border: '#8A9AA8' },
+  { id: 'neutral', label: '中性灰', hex: '#FAFAFA', border: '#D1D1D6' },
+  { id: 'charcoal', label: '炭灰', hex: '#383838', border: '#555555' },
+  { id: 'bridge', label: '过渡 bridge', hex: '#DFD5C8', border: '#D4C4A8' },
+];
+
+const HIGHLIGHTS = [
+  { id: 'auto', label: '自动', desc: '暖主题→H1 琥珀 · 冷主题→H2 板岩青', lines: ['按 colorTheme 配对'] },
+  { id: 'warm', label: 'H1 暖琥珀', desc: 'deep #6E6248 · base #B8A078 · onDark #E5D9BC', lines: ['#B8A078', '#6E6248', '#E5D9BC', '#F0E8D8'] },
+  { id: 'cool', label: 'H2 板岩青', desc: 'deep #4A635C · base #8AADA4 · onDark #A8C4BC', lines: ['#8AADA4', '#4A635C', '#A8C4BC', '#E4EDEA'] },
+];
+
+const SCHEMES = [
+  { id: 'auto', label: '自动', lines: ['按槽位明度自动 N/W'] },
+  { id: 'N', label: '浅底 N', lines: ['#383838', '#525252', '#666666', '#888888'] },
+  { id: 'B', label: '浅底 B', lines: ['#2F3840', '#4A5258', '#5C6570', '#7A8490'] },
+  { id: 'W', label: '深底 W', lines: ['#F4ECD7', '#EDE4CF', '#D4DCE3', '#B8C4CC'] },
+  { id: 'C', label: '深底 C', lines: ['#F0F2F4', '#D4DCE3', '#A8B8C4', '#8A9AA8'] },
+];
+
+const TEMPLATE_COLOR_HINTS = {
+  T00: 'surface neutral.surface · 字色 N',
+  T01: 'surface parchment.base（可换族）· 字色 N/B',
+  T02: 'builtin 青绿 #f2f5f0',
+  T03: 'blockA/B/C/D = rose / parchment / sage / charcoal',
+  T04: 'shell charcoal.500 · accent H2 板岩青 · 字色 W',
+  T05: 'morandiBlue 50/100 · 字色 B',
+  T06: 'shell charcoal.300 · listEmphasis 三色 · 字色 W',
+  T07: 'tag sage · highlight H1/H2 · bottomBlock parchment · 字色 N',
+  T08: 'quoteBlock parchment · 字色 N',
+  T99: 'surfaceGray #EEEEEE · 字色 N',
+  L01: 'neutral 长卡 · highlight H1 tag · r12',
+  L02: 'parchment 长卡 · highlight H1 · r12',
+};
+
+const HIGHLIGHT_HINTS = {
+  auto: '按配色主题：warm→H1 暖琥珀 · cool/morandi→H2 板岩青',
+  warm: 'H1 · tag/左线/strong · 配 parchment/neutral/rose',
+  cool: 'H2 · tag/左线/代码注释 · 配 morandiBlue/charcoal',
+};
+
+const state = { templates: new Set(), theme: 'agent-auto', families: new Set(), scheme: 'auto', highlight: 'auto' };
+let activePreviewId = null;
+
+function renderTemplates() {
+  document.getElementById('template-list').innerHTML = TEMPLATES.map(t => `
+    <div class="template-pick ${state.templates.has(t.id) ? 'selected' : ''} ${activePreviewId === t.id ? 'active-preview' : ''}"
+      data-template="${t.id}"
+      onclick="toggleTemplate('${t.id}')"
+      onmouseenter="showPreview('${t.id}')">
+      <div class="template-meta">
+        <div class="template-check"></div>
+        <div style="flex:1;">
+          <div class="pick-id">${t.id}</div>
+          <div class="pick-label">${t.label}</div>
+          <div class="pick-tags">${t.tags}</div>
+          <span class="pick-badge">${t.mode}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showPreview(id) {
+  const t = TEMPLATES.find(x => x.id === id);
+  if (!t) return;
+  activePreviewId = id;
+  document.getElementById('dock-title').textContent = `${t.id} · ${t.label}`;
+  document.getElementById('dock-sub').textContent = t.tags + ' · ' + t.mode;
+  document.getElementById('preview-inner').innerHTML = PREVIEWS[id] || '';
+  document.querySelectorAll('.template-pick').forEach(el => {
+    el.classList.toggle('active-preview', el.dataset.template === id);
+  });
+}
+
+function showPreviewPlaceholder() {
+  activePreviewId = null;
+  document.getElementById('dock-title').textContent = '模板预览';
+  document.getElementById('dock-sub').textContent = '悬停左侧模板 · 680px 公众号宽度 · 可滚动查看完整片段';
+  document.getElementById('preview-inner').innerHTML =
+    '<div class="preview-placeholder">将鼠标移到左侧模板条目<br>此处显示完整卡片预览</div>';
+  document.querySelectorAll('.template-pick').forEach(el => el.classList.remove('active-preview'));
+}
+
+function renderThemes() {
+  document.getElementById('theme-grid').innerHTML = THEMES.map(th => `
+    <div class="pick ${state.theme === th.id ? 'selected' : ''}" onclick="selectTheme('${th.id}')">
+      <div class="pick-label">${th.label}</div>
+      <div class="pick-tags">${th.desc}</div>
+      <div class="swatch-row">${th.swatches.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function renderFamilies() {
+  document.getElementById('family-grid').innerHTML = FAMILIES.map(f => `
+    <div class="pick family-pick ${state.families.has(f.id) ? 'selected' : ''}" onclick="toggleFamily('${f.id}')">
+      <div class="swatch" style="background:${f.hex};border:1px solid ${f.border}"></div>
+      <div class="family-name">${f.label}</div>
+      <div class="family-hex">${f.hex}</div>
+    </div>
+  `).join('');
+}
+
+function renderSchemes() {
+  document.getElementById('scheme-grid').innerHTML = SCHEMES.map(s => `
+    <div class="pick scheme-pick ${state.scheme === s.id ? 'selected' : ''}" onclick="selectScheme('${s.id}')">
+      <div class="pick-label">${s.label}</div>
+      <div class="scheme-line">${s.lines.join('\n')}</div>
+    </div>
+  `).join('');
+}
+
+function renderHighlights() {
+  document.getElementById('highlight-grid').innerHTML = HIGHLIGHTS.map(h => `
+    <div class="pick scheme-pick ${state.highlight === h.id ? 'selected' : ''}" onclick="selectHighlight('${h.id}')">
+      <div class="pick-label">${h.label}</div>
+      <div class="scheme-line">${h.desc}\n${h.lines.join('\n')}</div>
+    </div>
+  `).join('');
+}
+
+function toggleTemplate(id) {
+  if (state.templates.has(id)) state.templates.delete(id);
+  else state.templates.add(id);
+  showPreview(id);
+  renderTemplates();
+  updateSpec();
+}
+
+function selectTheme(id) { state.theme = id; renderThemes(); updateSpec(); }
+function toggleFamily(id) {
+  if (state.families.has(id)) state.families.delete(id);
+  else state.families.add(id);
+  renderFamilies(); updateSpec();
+}
+function selectScheme(id) { state.scheme = id; renderSchemes(); updateSpec(); }
+function selectHighlight(id) { state.highlight = id; renderHighlights(); updateSpec(); }
+
+function clearAll() {
+  state.templates.clear();
+  state.theme = 'agent-auto';
+  state.families.clear();
+  state.scheme = 'auto';
+  state.highlight = 'auto';
+  showPreviewPlaceholder();
+  renderTemplates(); renderThemes(); renderFamilies(); renderHighlights(); renderSchemes(); updateSpec();
+}
+
+function buildSpec(includePlaceholder) {
+  const lines = [];
+  lines.push('请排版 @你的文章.md → 生成公众号 HTML，复制粘贴到公众号编辑器');
+  lines.push('@wxlayout-wechat-paste · @wechat-safe-colors');
+  lines.push('');
+  if (state.templates.size === 0) {
+    lines.push('【模板】由 Agent 根据文章语义自主编排');
+  } else {
+    lines.push('【模板】' + TEMPLATES.filter(t => state.templates.has(t.id)).map(t => `${t.id} ${t.label}`).join(' · '));
+    lines.push('');
+    lines.push('【模板配色槽】');
+    TEMPLATES.filter(t => state.templates.has(t.id)).forEach(t => {
+      lines.push(`  ${t.id}：${TEMPLATE_COLOR_HINTS[t.id]}`);
+    });
+  }
+  lines.push('');
+  const th = THEMES.find(x => x.id === state.theme);
+  lines.push(state.theme === 'agent-auto' ? '【配色主题】默认 / 由 Agent 判断' : `【配色主题】${th.label}（${th.id}）\n  ${th.desc}`);
+  if (state.families.size > 0) {
+    lines.push('');
+    lines.push('【指定色族】' + FAMILIES.filter(f => state.families.has(f.id)).map(f => `${f.label}(${f.id})`).join(' · '));
+  }
+  lines.push('');
+  if (state.highlight === 'auto') lines.push('【高亮色】按配色主题自动（暖→H1 琥珀 · 冷→H2 板岩青）');
+  else {
+    const hl = HIGHLIGHTS.find(x => x.id === state.highlight);
+    lines.push(`【高亮色】${hl.label} · ${HIGHLIGHT_HINTS[state.highlight]}`);
+  }
+  lines.push('');
+  if (state.scheme === 'auto') lines.push('【字色阶梯】按槽位自动（浅 N/B · 深 W/C）');
+  else {
+    const sc = SCHEMES.find(x => x.id === state.scheme);
+    lines.push(`【字色阶梯】${sc.label} · ${sc.lines.join(' · ')}`);
+  }
+  lines.push('【输出】inline HTML · #copy-target · 浅/深 Safe');
+  if (includePlaceholder) lines[0] = '请排版 @你的文章路径.md → 生成公众号 HTML';
+  return lines.join('\n');
+}
+
+function updateSpec() { document.getElementById('spec-output').textContent = buildSpec(false); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function copyText(text) {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+  return Promise.resolve();
+}
+
+function copySpec() { copyText(buildSpec(false)).then(() => showToast('已复制风格与配色说明')); }
+function copySpecWithPlaceholder() { copyText(buildSpec(true)).then(() => showToast('已复制（含路径占位）')); }
+
+renderTemplates(); renderThemes(); renderFamilies(); renderHighlights(); renderSchemes(); updateSpec();
+</script>
+
+</body>
+</html>

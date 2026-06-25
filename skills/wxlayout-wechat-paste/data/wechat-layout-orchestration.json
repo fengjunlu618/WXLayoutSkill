@@ -1,0 +1,147 @@
+{
+  "version": "0.1",
+  "description": "Agent 自主选模板与配色的决策规则 · 用户未指定时默认执行",
+  "whenUserSpecifiesNothing": "完整走 analyze → plan → render；plan 可内嵌于回复或 LayoutDoc meta",
+  "steps": [
+    "通读 MD：字数、H2/H3 数量、是否有 table/blockquote/列表/并列结构",
+    "判定文章类型与气质（见 articleProfiles）",
+    "定模板种类数与映射（见 lengthTiers + semanticTriggers）",
+    "定配色主题与槽位换色（见 colorCoherence）",
+    "渲染；超长文可同一模板复用于多节"
+  ],
+  "lengthTiers": {
+    "short": {
+      "chars": "<1500",
+      "h2Max": 3,
+      "templateTypes": "2-3",
+      "pattern": "T00 + 1 body template + T08",
+      "note": "避免每张 H2 一张卡；普通段落用 T00 内正文或 neutral 段落"
+    },
+    "medium": {
+      "chars": "1500-3500",
+      "h2Max": 6,
+      "templateTypes": "3-4",
+      "pattern": "T00 + 2-3 semantic cards + T08",
+      "note": "标杆实验文量级；每 major 论点最多 1 张特色卡"
+    },
+    "long": {
+      "chars": ">3500",
+      "h2Max": 999,
+      "templateTypes": "4-5",
+      "pattern": "T00 + 按章轮换 3-4 种模板 + T07/T06 可选 + T08",
+      "note": "同模板可重复；相邻两节避免连续同深底 T04+T06"
+    }
+  },
+  "articleProfiles": {
+    "personal-opinion": {
+      "signals": ["我认为", "痛点", "经历", "第一人称叙事"],
+      "templates": ["T00", "T01", "T08"],
+      "colorTheme": "warm",
+      "note": "笔记用 parchment；全文暖中性"
+    },
+    "method-framework": {
+      "signals": ["分层", "层级", "表格", "模型", "框架"],
+      "templates": ["T00", "T02", "T03", "T08"],
+      "colorTheme": "warm-mixed",
+      "note": "T02 仅当东方/calm 气质；否则 T01+T03"
+    },
+    "product-tech": {
+      "signals": ["架构", "API", "模块", "数据流", "Layer"],
+      "templates": ["T00", "T04", "T07", "T08"],
+      "colorTheme": "cool-neutral",
+      "note": "T04 shell charcoal；可换 morandiBlue 深"
+    },
+    "story-case": {
+      "signals": ["案例", "故事", "然后我发现", "过程"],
+      "templates": ["T00", "T05", "T01", "T08"],
+      "colorTheme": "morandi-soft",
+      "note": "T05 用 morandi 替代 legacy 蓝"
+    },
+    "roadmap-plan": {
+      "signals": ["MVP", "V1", "阶段", "路线图", "计划"],
+      "templates": ["T00", "T07", "T08"],
+      "colorTheme": "neutral-warm-accent",
+      "note": "T07 tag 用 sage；底块 parchment"
+    },
+    "meta-manifesto": {
+      "signals": ["测试", "验证", "清单", "本文就是"],
+      "templates": ["T00", "T06", "T08"],
+      "colorTheme": "dark-accent",
+      "note": "T06 单张即可；listEmphasis 三色轮换"
+    },
+    "long-form-unified": {
+      "signals": ["长文", "深度阅读", "统一规范", "少卡片", "长卡"],
+      "templates": ["L01", "L02"],
+      "colorTheme": "warm",
+      "note": "L01 中性 + L02 羊皮纸；章内分隔线；radius 见 wechat-layout-tokens.json"
+    }
+  },
+  "semanticTriggers": {
+    "blockquote-or-golden-sentence": "T01 sticky-summary 或 T08 quoteBlock",
+    "numbered-options-abcd": "T03",
+    "parallel-paths-or-versus": "T03",
+    "layered-stack-or-pipeline": "T04",
+    "timeline-or-phases": "T07",
+    "table-as-layers": "T02 if calm-east else T07",
+    "checklist-or-inventory": "T06",
+    "first-person-anecdote": "T01 or T05"
+  },
+  "colorCoherence": {
+    "maxFamiliesPerArticle": 4,
+    "themes": {
+      "warm": {
+        "primary": ["parchment", "neutral"],
+        "accent": ["rose", "sage"],
+        "highlight": "highlights.warm",
+        "deep": "charcoal.scale.300"
+      },
+      "warm-mixed": {
+        "primary": ["parchment", "neutral"],
+        "accent": ["rose", "sage", "charcoal"],
+        "highlight": "highlights.warm",
+        "compareBlocks": ["rose", "parchment", "sage", "charcoal"]
+      },
+      "cool-neutral": {
+        "primary": ["neutral", "morandiBlue"],
+        "accent": ["sage"],
+        "highlight": "highlights.cool",
+        "deep": ["charcoal.scale.500", "morandiBlue.scaleDark.300"]
+      },
+      "morandi-soft": {
+        "primary": ["morandiBlue.scale.50", "morandiBlue.scale.100"],
+        "accent": ["parchment"],
+        "highlight": "highlights.cool",
+        "textOnMorandi": "B"
+      },
+      "neutral-warm-accent": {
+        "primary": ["neutral"],
+        "accent": ["sage", "parchment"],
+        "highlight": "highlights.warm",
+        "deep": null
+      },
+      "dark-accent": {
+        "primary": ["charcoal"],
+        "highlight": "highlights.warm",
+        "listEmphasis": ["rose", "parchment", "sage"],
+        "text": "W"
+      }
+    },
+    "rules": [
+      "同一文章主色温一致：暖文不突然全 morandi 冷蓝，除非 T04/T05 单节",
+      "T03 四块可多彩，但必须全部来自 Safe 族",
+      "深底卡 T04/T06 全篇最多 2 张，且不要相邻",
+      "T02 出现则全文最多 1 张，且前后用 neutral/parchment 过渡",
+      "无 T03/T06 时优先 2 族：neutral + parchment",
+      "用户未指定时：用 defaultBindings，仅当 profile.colorTheme 要求时 swapSlots"
+    ]
+  },
+  "antiPatterns": [
+    "每个 H2 换一种模板 — 海报化",
+    "短于 1500 字用 5+ 模板种类",
+    "连续 3 张深底卡",
+    "T02 与 T04 同篇且相邻 — 气质冲突",
+    "全篇每节不同色族 — 花",
+    "有 T03 仍给每块单独发明配色",
+    "同一篇混用 4/6/8/10/18px 圆角 — 用 wechat-layout-tokens 统一 12px（r12）"
+  ]
+}

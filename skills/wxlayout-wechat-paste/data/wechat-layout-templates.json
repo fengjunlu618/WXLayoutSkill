@@ -1,0 +1,230 @@
+{
+  "name": "wechat-layout-templates",
+  "version": "0.1",
+  "description": "公众号卡片模板 · 结构与配色槽分离 · 配色来自 wechat-safe-palette",
+  "referenceHtml": "see examples/ in repo root",
+  "orchestration": "data/wechat-layout-orchestration.json",
+  "paletteSource": "../wechat-safe-colors/data/wechat-safe-palette.json",
+  "colorModes": {
+    "builtin": "模板自带配色体系，整卡不拆槽（如 T02 山水）",
+    "safe-default": "默认槽位已绑定 Safe 族，可直接渲染",
+    "safe-swappable": "多彩槽位可从 Safe 清单换族，结构不变"
+  },
+  "textSchemes": {
+    "onLight": "N",
+    "onLightMorandi": "B",
+    "onDark": "W",
+    "onDarkMorandi": "C"
+  },
+  "templates": {
+    "T00": {
+      "id": "T00",
+      "label": "开篇杂志",
+      "semantic": ["opening", "lede", "hero"],
+      "colorMode": "safe-default",
+      "structure": ["tag-row", "gradient-title", "subtitle-right", "rule", "body", "quote-band", "footer-brand"],
+      "defaultBindings": {
+        "surface": "neutral.surface",
+        "border": "neutral.border",
+        "text": "textScheme.onLightNeutral",
+        "accentGradient": ["neutral.textPrimary", "neutral.textSecondary", "sage.base"]
+      },
+      "swappableSlots": ["accentGradient"],
+      "status": "validated"
+    },
+    "T01": {
+      "id": "T01",
+      "label": "笔记",
+      "semantic": ["note", "pain-point", "diary", "blockquote-block"],
+      "colorMode": "safe-swappable",
+      "structure": ["ruled-paper-bg", "header-bar", "body-left-margin", "sticky-summary"],
+      "defaultBindings": {
+        "surface": "parchment.base",
+        "surfaceMuted": "parchment.scale.200",
+        "line": "parchment.scale.300",
+        "border": "parchment.border",
+        "text": "textScheme.onLightNeutral"
+      },
+      "swappableSlots": ["surface", "surfaceMuted", "line", "border"],
+      "swapFamilies": ["parchment", "rose", "sage", "lavender", "morandiBlue", "bridge"],
+      "status": "validated"
+    },
+    "T02": {
+      "id": "T02",
+      "label": "山水理念",
+      "semantic": ["philosophy", "layers", "timeline-rows", "center-quote"],
+      "colorMode": "builtin",
+      "structure": ["gradient-mist-bg", "header-divider", "border-left-rows", "center-quote-box"],
+      "defaultBindings": {
+        "note": "独立青绿体系 · 不映射 Safe 四色为主色"
+      },
+      "swappableSlots": [],
+      "status": "validated",
+      "builtinPalette": {
+        "surface": "#f2f5f0",
+        "border": "#b8c4b8",
+        "textPrimary": "#2c3a32",
+        "textBody": "#44403c",
+        "textMuted": "#57534e",
+        "accent": "#8b7355"
+      }
+    },
+    "T03": {
+      "id": "T03",
+      "label": "对比路径",
+      "semantic": ["compare", "paths", "options", "pros-cons"],
+      "colorMode": "safe-swappable",
+      "structure": ["gray-container", "block-a", "block-b", "block-c", "block-d-highlight"],
+      "defaultBindings": {
+        "container": "neutral.surfaceGray",
+        "containerBorder": "neutral.border",
+        "blockA": "rose.base",
+        "blockB": "parchment.base",
+        "blockC": "sage.base",
+        "blockD": "charcoal.scale.300",
+        "blockTextLight": "textScheme.onLightNeutral",
+        "blockTextDark": "textScheme.onDarkWarm"
+      },
+      "swappableSlots": ["blockA", "blockB", "blockC", "blockD"],
+      "swapFamilies": ["rose", "parchment", "sage", "lavender", "morandiBlue", "charcoal", "bridge"],
+      "status": "validated"
+    },
+    "T04": {
+      "id": "T04",
+      "label": "架构极客",
+      "semantic": ["architecture", "layers", "tech", "data-flow"],
+      "colorMode": "mixed",
+      "structure": ["dark-gradient-shell", "layer-raised", "layer-inset", "code-strip"],
+      "defaultBindings": {
+        "shell": "charcoal.scale.500",
+        "layerRaised": "charcoal.scale.400",
+        "layerInset": "#18181a",
+        "text": "textScheme.onDarkWarm",
+        "accent": "sage.base",
+        "accentBright": "highlights.cool.base"
+      },
+      "swappableSlots": ["shell", "layerRaised", "accent"],
+      "swapFamilies": ["charcoal", "morandiBlue.scaleDark", "sage"],
+      "status": "validated",
+      "notes": "accentBright 为点缀色，大面积仍用 charcoal / morandi 深"
+    },
+    "T05": {
+      "id": "T05",
+      "label": "故事",
+      "semantic": ["story", "narrative", "case"],
+      "colorMode": "safe-swappable",
+      "structure": ["rounded-shell", "header", "body", "inset-callout", "closing-center"],
+      "defaultBindings": {
+        "surface": "morandiBlue.scale.50",
+        "border": "morandiBlue.scale.200",
+        "callout": "morandiBlue.scale.100",
+        "text": "textScheme.onLightBlueGray"
+      },
+      "swappableSlots": ["surface", "border", "callout"],
+      "swapFamilies": ["morandiBlue", "parchment", "lavender", "neutral"],
+      "status": "pending-safe-migration",
+      "legacyNote": "标杆 HTML 仍为蓝系，新文应改用 Safe 默认绑定"
+    },
+    "T06": {
+      "id": "T06",
+      "label": "元测试深块",
+      "semantic": ["meta", "checklist", "self-test", "inventory"],
+      "colorMode": "safe-swappable",
+      "structure": ["dark-shell", "hero-center", "zebra-list", "footer-quote"],
+      "defaultBindings": {
+        "shell": "charcoal.scale.300",
+        "shellBorder": "charcoal.border",
+        "text": "textScheme.onDarkWarm",
+        "tagAccent": "sage.base",
+        "listEmphasis": ["rose.base", "parchment.base", "sage.base"]
+      },
+      "swappableSlots": ["shell", "listEmphasis"],
+      "swapFamilies": ["charcoal", "morandiBlue.scaleDark", "rose", "parchment", "sage"],
+      "status": "validated"
+    },
+    "T07": {
+      "id": "T07",
+      "label": "路线图",
+      "semantic": ["roadmap", "timeline", "mvp", "phases"],
+      "colorMode": "safe-default",
+      "structure": ["neutral-shell", "left-border-timeline", "phase-tags", "bottom-parchment-block"],
+      "defaultBindings": {
+        "surface": "neutral.surface",
+        "timelineRule": "neutral.border",
+        "tagPrimary": "sage.base",
+        "highlightTag": "highlights.warm",
+        "bottomBlock": "parchment.base",
+        "text": "textScheme.onLightNeutral"
+      },
+      "swappableSlots": ["tagPrimary", "bottomBlock"],
+      "swapFamilies": ["sage", "morandiBlue", "parchment", "rose"],
+      "status": "validated"
+    },
+    "T08": {
+      "id": "T08",
+      "label": "结语",
+      "semantic": ["closing", "cta", "final-word"],
+      "colorMode": "safe-default",
+      "structure": ["neutral-shell", "body", "right-lede", "center-parchment-quote"],
+      "defaultBindings": {
+        "surface": "neutral.surface",
+        "quoteBlock": "parchment.base",
+        "quoteBorder": "parchment.border",
+        "text": "textScheme.onLightNeutral"
+      },
+      "swappableSlots": ["quoteBlock"],
+      "swapFamilies": ["parchment", "rose", "morandiBlue", "sage"],
+      "status": "validated"
+    },
+    "T99": {
+      "id": "T99",
+      "label": "页脚灰栏",
+      "semantic": ["footer", "meta", "date"],
+      "colorMode": "safe-default",
+      "structure": ["compact-gray-bar"],
+      "defaultBindings": {
+        "surface": "neutral.surfaceGray",
+        "text": "textScheme.onLightNeutral"
+      },
+      "swappableSlots": [],
+      "status": "validated"
+    },
+    "L01": {
+      "id": "L01",
+      "label": "中性长文卡",
+      "semantic": ["long-form", "deep-read", "unified", "article-body"],
+      "colorMode": "safe-default",
+      "structure": ["neutral-shell", "opening-block", "section-dividers", "inner-parchment", "inner-gray", "inner-code", "inner-image-slot"],
+      "defaultBindings": {
+        "surface": "neutral.surface",
+        "border": "neutral.border",
+        "divider": "neutral.border",
+        "text": "textScheme.onLightNeutral",
+        "innerSurface": "parchment.base",
+        "innerBorder": "parchment.border"
+      },
+      "layoutTokens": "data/wechat-layout-tokens.json",
+      "status": "validated",
+      "notes": "全篇 Part 1 或单卡长文；H2 用分隔线而非独立外卡；圆角统一 12px（r12）"
+    },
+    "L02": {
+      "id": "L02",
+      "label": "羊皮纸长文卡",
+      "semantic": ["long-form", "closing", "outlook", "cta"],
+      "colorMode": "safe-swappable",
+      "structure": ["parchment-shell", "section-dividers", "inner-neutral", "center-quote", "footer-meta"],
+      "defaultBindings": {
+        "surface": "parchment.base",
+        "border": "parchment.border",
+        "divider": "parchment.scale.300",
+        "text": "textScheme.onLightNeutral",
+        "quoteBlock": "parchment.scale.200",
+        "quoteBorder": "parchment.border"
+      },
+      "swapFamilies": ["parchment", "morandiBlue", "sage"],
+      "layoutTokens": "data/wechat-layout-tokens.json",
+      "status": "validated",
+      "notes": "全篇 Part 2 或收尾半篇；与 L01 组合为双长卡模式"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# Codex Skill UI metadata + invocation policy
+# https://developers.openai.com/codex/skills
+name: wechat-safe-colors
+description: >-
+  WeChat-Safe color palette layer. Low-saturation families, 50-500 scales,
+  four-level text schemes N/B/W/C, highlights H1/H2, mp-darkmode rules.
+allow_implicit_invocation: true

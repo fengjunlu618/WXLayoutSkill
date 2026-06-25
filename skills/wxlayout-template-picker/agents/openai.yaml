@@ -1,0 +1,8 @@
+# Codex Skill UI metadata + invocation policy
+# https://developers.openai.com/codex/skills
+name: wxlayout-template-picker
+description: >-
+  Helps users visually pick WeChat layout templates and WeChat-Safe color
+  themes before rendering. Produces a LayoutRequest summary to feed into
+  wxlayout-wechat-paste.
+allow_implicit_invocation: true

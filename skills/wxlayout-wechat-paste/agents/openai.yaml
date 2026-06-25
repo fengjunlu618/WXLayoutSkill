@@ -1,0 +1,7 @@
+# Codex Skill UI metadata + invocation policy
+# https://developers.openai.com/codex/skills
+name: wxlayout-wechat-paste
+description: >-
+  Renders paste-ready WeChat公众号 HTML from Markdown. Autonomously picks
+  card templates (T00-T08, L01-L02) and WeChat-Safe color bindings.
+allow_implicit_invocation: true

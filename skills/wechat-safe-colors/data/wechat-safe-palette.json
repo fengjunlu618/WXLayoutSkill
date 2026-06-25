@@ -1,0 +1,218 @@
+{
+  "name": "wechat-safe",
+  "version": "0.5",
+  "description": "低饱和安全色 · 微信浅/深双模式 · 模块 A-K 实测通过",
+  "status": "validated",
+  "validatedAt": "2026-06-25",
+  "skill": "SKILL.md",
+  "layoutTemplates": "../wxlayout-wechat-paste/data/wechat-layout-templates.json",
+  "pasteSkill": "../wxlayout-wechat-paste/SKILL.md",
+  "orchestration": "../wxlayout-wechat-paste/data/wechat-layout-orchestration.json",
+  "testPage": "see examples/ in repo root",
+  "families": {
+    "parchment": {
+      "label": "羊皮纸",
+      "base": "#F4ECD7",
+      "scale": {
+        "50": "#FAF6EC",
+        "100": "#F4ECD7",
+        "200": "#EDE4CF",
+        "300": "#E5D9BC",
+        "400": "#D9CEB0",
+        "500": "#D4C4A8"
+      },
+      "border": "#D9CEB0",
+      "textOnLight": "#383838"
+    },
+    "rose": {
+      "label": "尘粉",
+      "base": "#CFB7B7",
+      "scale": {
+        "50": "#F0E4E4",
+        "100": "#E8D5D5",
+        "200": "#CFB7B7",
+        "300": "#D9C4C4",
+        "400": "#B8A0A0",
+        "500": "#A89090"
+      },
+      "border": "#B8A0A0",
+      "textOnLight": "#383838"
+    },
+    "sage": {
+      "label": "鼠尾草",
+      "base": "#BAC895",
+      "scale": {
+        "50": "#E8EDD8",
+        "100": "#D4DEB8",
+        "200": "#BAC895",
+        "300": "#C5D0A8",
+        "400": "#9FA882",
+        "500": "#8A9470"
+      },
+      "border": "#9FA882",
+      "textOnLight": "#383838"
+    },
+    "lavender": {
+      "label": "薰衣草",
+      "base": "#C8C0D4",
+      "scale": {
+        "50": "#E4DFEC",
+        "100": "#D8D2E4",
+        "200": "#C8C0D4",
+        "300": "#B8B0C8",
+        "400": "#B0A8C4",
+        "500": "#9890AD"
+      },
+      "border": "#B0A8C4",
+      "textOnLight": "#383838"
+    },
+    "warmNeutral": {
+      "label": "暖灰",
+      "base": "#E8E4DE",
+      "scale": {
+        "50": "#F0EEEA",
+        "100": "#E8E4DE",
+        "200": "#D8D4CC",
+        "300": "#5C5348",
+        "400": "#44403C"
+      },
+      "border": "#D1D1D6",
+      "textOnLight": "#383838",
+      "textOnDark": "#F4ECD7"
+    },
+    "charcoal": {
+      "label": "炭灰",
+      "base": "#383838",
+      "scale": {
+        "100": "#525252",
+        "200": "#444444",
+        "300": "#383838",
+        "400": "#2D2D2D",
+        "500": "#161618"
+      },
+      "border": "#555555",
+      "textOnDark": "#F4ECD7",
+      "textOnDarkMuted": "#EDE4CF"
+    },
+    "neutral": {
+      "label": "中性灰",
+      "scale": {
+        "canvas": "#F5F5F5",
+        "surface": "#FAFAFA",
+        "surfaceGray": "#EEEEEE",
+        "border": "#D1D1D6",
+        "textPrimary": "#383838",
+        "textSecondary": "#666666"
+      }
+    },
+    "bridge": {
+      "label": "色系过渡",
+      "parchmentRose": "#DFD5C8",
+      "roseSage": "#D4C9AE",
+      "sageParchment": "#D8DFC8",
+      "morandiBlueParchment": "#C8D4DC"
+    },
+    "morandiBlue": {
+      "label": "莫兰迪蓝",
+      "base": "#B8C4CC",
+      "scale": {
+        "50": "#EEF1F4",
+        "100": "#D4DCE3",
+        "200": "#B8C4CC",
+        "300": "#A8B8C4",
+        "400": "#8A9AA8",
+        "500": "#738291"
+      },
+      "scaleDark": {
+        "100": "#6B7B8A",
+        "200": "#526872",
+        "300": "#3D4F5C",
+        "400": "#2F3E48",
+        "500": "#243038"
+      },
+      "border": "#8A9AA8",
+      "borderDark": "#526872",
+      "textOnLight": {
+        "neutral": {
+          "L1": "#383838",
+          "L2": "#525252",
+          "L3": "#666666",
+          "L4": "#888888"
+        },
+        "blueGray": {
+          "L1": "#2F3840",
+          "L2": "#4A5258",
+          "L3": "#5C6570",
+          "L4": "#7A8490"
+        }
+      },
+      "textOnDark": {
+        "warm": {
+          "L1": "#F4ECD7",
+          "L2": "#EDE4CF",
+          "L3": "#D4DCE3",
+          "L4": "#B8C4CC"
+        },
+        "cool": {
+          "L1": "#F0F2F4",
+          "L2": "#D4DCE3",
+          "L3": "#A8B8C4",
+          "L4": "#8A9AA8"
+        }
+      }
+    }
+  },
+  "textHierarchy": {
+    "description": "浅底/深底各两套四级字色，用于微信浅深模式搭配实验",
+    "onLightNeutral": ["#383838", "#525252", "#666666", "#888888"],
+    "onLightBlueGray": ["#2F3840", "#4A5258", "#5C6570", "#7A8490"],
+    "onDarkWarm": ["#F4ECD7", "#EDE4CF", "#D4DCE3", "#B8C4CC"],
+    "onDarkCool": ["#F0F2F4", "#D4DCE3", "#A8B8C4", "#8A9AA8"]
+  },
+  "highlights": {
+    "description": "小面积高亮 · 阶段 tag · 左竖线 · strong · 禁止大面积底",
+    "warm": {
+      "id": "H1",
+      "label": "暖琥珀",
+      "base": "#B8A078",
+      "deep": "#6E6248",
+      "border": "#9A8868",
+      "tint": "#F0E8D8",
+      "onLight": "#6E6248",
+      "onDark": "#E5D9BC",
+      "pairsWith": ["parchment", "rose", "sage", "warmNeutral", "neutral"],
+      "themes": ["warm", "warm-mixed", "neutral-warm-accent", "dark-accent"],
+      "usage": "暖色主题默认高亮 · 时间轴 tag · 左 border-left · 浅底 strong"
+    },
+    "cool": {
+      "id": "H2",
+      "label": "板岩青",
+      "base": "#8AADA4",
+      "deep": "#4A635C",
+      "border": "#6B8A82",
+      "tint": "#E4EDEA",
+      "onLight": "#4A635C",
+      "onDark": "#A8C4BC",
+      "pairsWith": ["morandiBlue", "lavender", "neutral", "charcoal"],
+      "themes": ["cool-neutral", "morandi-soft"],
+      "usage": "冷色主题默认高亮 · 架构 accent 线 · 代码注释色 · 替代 #64d2ff"
+    }
+  },
+  "highlightPairing": {
+    "autoByTheme": {
+      "warm": "highlights.warm",
+      "warm-mixed": "highlights.warm",
+      "neutral-warm-accent": "highlights.warm",
+      "dark-accent": "highlights.warm",
+      "cool-neutral": "highlights.cool",
+      "morandi-soft": "highlights.cool",
+      "agent-auto": "按文章 colorTheme 自动"
+    },
+    "rules": [
+      "全篇最多 2 种高亮（H1+H2），同屏段落只用其一",
+      "高亮色仅用于 tag / 3px 以内竖线 / span级 strong，不作卡片底",
+      "深底用 onDark 色阶，浅底用 deep 或 base",
+      "sage.base 仍可作为色块底；高亮用于字与线，与 sage 底可共存"
+    ]
+  }
+}

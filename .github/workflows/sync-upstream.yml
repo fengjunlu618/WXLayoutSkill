@@ -1,0 +1,25 @@
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 每天 03:00 UTC 自动同步
+  workflow_dispatch:      # 支持手动触发
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync fork with upstream
+        run: |
+          gh repo sync "$GITHUB_REPOSITORY" \
+            --source TanShilongMario/WXLayoutSkill \
+            --branch main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
